@@ -1,9 +1,5 @@
 {
   "scripts": {
-    "start": "npm run build && http-server",
     "build": "gopherjs build main.go"
-  },
-  "dependencies": {
-    "http-server": "^0.11.1"
   }
 }
