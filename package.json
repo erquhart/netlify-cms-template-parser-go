@@ -1,5 +1,8 @@
 {
+  "name": "netlify-cms-template-parser-go",
+  "version": "0.1.0",
+  "main": "dist/main.js",
   "scripts": {
-    "build": "gopherjs build main.go"
+    "build": "gopherjs build ./src -o ./dist/main.js"
   }
 }
