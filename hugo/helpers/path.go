@@ -1,41 +1,27 @@
-package main
+// Copyright 2017 The Hugo Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// With modifications by the Netlify CMS Authors.
+
+package helpers
 
 import (
   "strings"
   "unicode"
-  "net/url"
 
   "golang.org/x/text/transform"
   "golang.org/x/text/unicode/norm"
 )
-
-// URLize is similar to MakePath, but with Unicode handling
-// Example:
-//     uri: Vim (text editor)
-//     urlize: vim-text-editor
-func (p *PathSpec) URLize(uri string) string {
-  return p.URLEscape(p.MakePathSanitized(uri))
-}
-
-// URLEscape escapes unicode letters.
-func (p *PathSpec) URLEscape(uri string) string {
-  // escape unicode letters
-  parsedURI, err := url.Parse(uri)
-  if err != nil {
-    // if net/url can not parse URL it means Sanitize works incorrectly
-    panic(err)
-  }
-  x := parsedURI.String()
-  return x
-}
-
-// MakePathSanitized creates a Unicode-sanitized string, with the spaces replaced
-func (p *PathSpec) MakePathSanitized(s string) string {
-  if p.disablePathToLower {
-    return p.MakePath(s)
-  }
-  return strings.ToLower(p.MakePath(s))
-}
 
 // MakePath takes a string with any characters and replace it
 // so the string could be used in a path.
@@ -44,6 +30,14 @@ func (p *PathSpec) MakePathSanitized(s string) string {
 // E.g. Social Media -> Social-Media
 func (p *PathSpec) MakePath(s string) string {
   return p.UnicodeSanitize(strings.Replace(strings.TrimSpace(s), " ", "-", -1))
+}
+
+// MakePathSanitized creates a Unicode-sanitized string, with the spaces replaced
+func (p *PathSpec) MakePathSanitized(s string) string {
+  if p.disablePathToLower {
+    return p.MakePath(s)
+  }
+  return strings.ToLower(p.MakePath(s))
 }
 
 // From https://golang.org/src/net/url/url.go
@@ -57,10 +51,6 @@ func ishex(c rune) bool {
     return true
   }
   return false
-}
-
-func isMn(r rune) bool {
-  return unicode.Is(unicode.Mn, r) // Mn: nonspacing marks
 }
 
 // UnicodeSanitize sanitizes string to be used in Hugo URL's, allowing only
@@ -90,4 +80,8 @@ func (p *PathSpec) UnicodeSanitize(s string) string {
   }
 
   return result
+}
+
+func isMn(r rune) bool {
+  return unicode.Is(unicode.Mn, r) // Mn: nonspacing marks
 }

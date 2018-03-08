@@ -4,6 +4,10 @@ import (
   "bytes"
   "html/template"
 
+  "github.com/erquhart/netlify-cms-template-parser-go/hugo/config"
+  "github.com/erquhart/netlify-cms-template-parser-go/hugo/helpers"
+  "github.com/erquhart/netlify-cms-template-parser-go/hugo/tpl/collections"
+  "github.com/erquhart/netlify-cms-template-parser-go/hugo/tpl/urls"
   "github.com/gopherjs/gopherjs/js"
   "gopkg.in/russross/blackfriday.v2"
 )
@@ -18,10 +22,17 @@ func main() {
   })
 }
 
+/*
 type PathSpec struct {
   disablePathToLower bool
   removePathAccents  bool
 }
+
+var PathSpec := helpers.NewPathSpec(&config.Provider{
+  disablePathToLower: false,
+  removePathAccents: false,
+})
+*/
 
 func renderMarkdown(tmpl string) template.HTML {
   input := []byte(tmpl)
@@ -30,18 +41,13 @@ func renderMarkdown(tmpl string) template.HTML {
 }
 
 func compile(data *js.Object, tmpl string) string {
-  ps := &PathSpec{
-    disablePathToLower: false,
-    removePathAccents: false,
-  }
-
   var dataMap = data.Interface()
   var buf bytes.Buffer
   var t, _ = template.New("").Funcs(template.FuncMap{
     "renderMarkdown": renderMarkdown,
-    "urlize": ps.URLize,
-    "first": First,
-    "where": Where,
+    "urlize": urls.URLize,
+    "first": collections.First,
+    "where": collections.Where,
   }).Parse(tmpl)
   t.Execute(&buf, dataMap)
   return buf.String()
