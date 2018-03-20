@@ -13,29 +13,20 @@
 //
 // With modifications by the Netlify CMS Authors.
 
-package urls
+package encoding
 
 import (
-  "github.com/erquhart/netlify-cms-template-parser-go/hugo/deps"
-  "github.com/spf13/cast"
+  "encoding/json"
+  "html/template"
 )
 
-// New returns a new instance of the urls-namespaced template functions.
-func New(deps *deps.Deps) *Namespace {
-  return &Namespace{
-    deps:      deps,
-  }
-}
 
-// Namespace provides template functions for the "urls" namespace.
-type Namespace struct {
-  deps      *deps.Deps
-}
-
-func (ns *Namespace) URLize(a interface{}) (string, error) {
-  s, err := cast.ToStringE(a)
+// Jsonify encodes a given object to JSON.
+func Jsonify(v interface{}) (template.HTML, error) {
+  b, err := json.Marshal(v)
   if err != nil {
-    return "", nil
+    return "", err
   }
-  return ns.deps.PathSpec.URLize(s), nil
+
+  return template.HTML(b), nil
 }

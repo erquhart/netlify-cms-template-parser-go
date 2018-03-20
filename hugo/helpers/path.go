@@ -18,9 +18,6 @@ package helpers
 import (
   "strings"
   "unicode"
-
-  "golang.org/x/text/transform"
-  "golang.org/x/text/unicode/norm"
 )
 
 // MakePath takes a string with any characters and replace it
@@ -28,16 +25,13 @@ import (
 // It does so by creating a Unicode-sanitized string, with the spaces replaced,
 // whilst preserving the original casing of the string.
 // E.g. Social Media -> Social-Media
-func (p *PathSpec) MakePath(s string) string {
-  return p.UnicodeSanitize(strings.Replace(strings.TrimSpace(s), " ", "-", -1))
+func MakePath(s string) string {
+  return UnicodeSanitize(strings.Replace(strings.TrimSpace(s), " ", "-", -1))
 }
 
 // MakePathSanitized creates a Unicode-sanitized string, with the spaces replaced
-func (p *PathSpec) MakePathSanitized(s string) string {
-  if p.disablePathToLower {
-    return p.MakePath(s)
-  }
-  return strings.ToLower(p.MakePath(s))
+func MakePathSanitized(s string) string {
+  return strings.ToLower(MakePath(s))
 }
 
 // From https://golang.org/src/net/url/url.go
@@ -57,7 +51,7 @@ func ishex(c rune) bool {
 // a predefined set of special Unicode characters.
 // If RemovePathAccents configuration flag is enabled, Uniccode accents
 // are also removed.
-func (p *PathSpec) UnicodeSanitize(s string) string {
+func UnicodeSanitize(s string) string {
   source := []rune(s)
   target := make([]rune, 0, len(source))
 
@@ -69,19 +63,5 @@ func (p *PathSpec) UnicodeSanitize(s string) string {
     }
   }
 
-  var result string
-
-  if p.removePathAccents {
-    // remove accents - see https://blog.golang.org/normalization
-    t := transform.Chain(norm.NFD, transform.RemoveFunc(isMn), norm.NFC)
-    result, _, _ = transform.String(t, string(target))
-  } else {
-    result = string(target)
-  }
-
-  return result
-}
-
-func isMn(r rune) bool {
-  return unicode.Is(unicode.Mn, r) // Mn: nonspacing marks
+  return string(target)
 }

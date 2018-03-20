@@ -23,6 +23,27 @@ import (
   "github.com/spf13/cast"
 )
 
+// Dictionary creates a map[string]interface{} from the given parameters by
+// walking the parameters and treating them as key-value pairs.  The number
+// of parameters must be even.
+func Dictionary(values ...interface{}) (map[string]interface{}, error) {
+  if len(values)%2 != 0 {
+    return nil, errors.New("invalid dictionary call")
+  }
+
+  dict := make(map[string]interface{}, len(values)/2)
+
+  for i := 0; i < len(values); i += 2 {
+    key, ok := values[i].(string)
+    if !ok {
+      return nil, errors.New("dictionary keys must be strings")
+    }
+    dict[key] = values[i+1]
+  }
+
+  return dict, nil
+}
+
 // First returns the first N items in a rangeable list.
 func First(limit interface{}, seq interface{}) (interface{}, error) {
   if limit == nil || seq == nil {
@@ -129,6 +150,11 @@ func Intersect(l1, l2 interface{}) (interface{}, error) {
   default:
     return nil, errors.New("can't iterate over " + reflect.ValueOf(l1).Type().String())
   }
+}
+
+// Slice returns a slice of all passed arguments.
+func Slice(args ...interface{}) []interface{} {
+  return args
 }
 
 type intersector struct {

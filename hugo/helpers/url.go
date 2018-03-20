@@ -23,12 +23,12 @@ import (
 // Example:
 //     uri: Vim (text editor)
 //     urlize: vim-text-editor
-func (p *PathSpec) URLize(uri string) string {
-  return p.URLEscape(p.MakePathSanitized(uri))
+func URLize(uri string) string {
+  return URLEscape(MakePathSanitized(uri))
 }
 
 // URLEscape escapes unicode letters.
-func (p *PathSpec) URLEscape(uri string) string {
+func URLEscape(uri string) string {
   // escape unicode letters
   parsedURI, err := url.Parse(uri)
   if err != nil {

@@ -13,24 +13,16 @@
 //
 // With modifications by the Netlify CMS Authors.
 
-package helpers
+package safe
 
 import (
-  "github.com/erquhart/netlify-cms-template-parser-go/hugo/config"
+  "html/template"
+
+  "github.com/spf13/cast"
 )
 
-// PathSpec holds methods that decides how paths in URLs and files in Hugo should look like.
-type PathSpec struct {
-  disablePathToLower bool
-  removePathAccents  bool
-}
-
-// NewPathSpec creats a new PathSpec from the given filesystems and Language.
-func NewPathSpec(cfg config.Provider) (*PathSpec, error) {
-  ps := &PathSpec{
-    disablePathToLower:             cfg.GetBool("disablePathToLower"),
-    removePathAccents:              cfg.GetBool("removePathAccents"),
-  }
-
-  return ps, nil
+// JS returns the given string as a html/template JS content.
+func JS(a interface{}) (template.JS, error) {
+  s, err := cast.ToStringE(a)
+  return template.JS(s), err
 }
